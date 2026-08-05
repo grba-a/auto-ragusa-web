@@ -173,6 +173,36 @@ monu, ne mikro-tag. Uz to: horizontalni scroll, broj redova u `h1`, em dashevi
 
 Varijante: `--reduced`, `--url /en`.
 
+## Deploy na Vercel
+
+Projekt ne treba `vercel.json`. Next.js se detektira sam.
+
+```bash
+gh repo create auto-ragusa-web --public --source=. --remote=origin --push
+```
+
+Zatim na Vercelu: **Add New Project** pa uvoz tog repoa. Build i output ostaju
+zadani (`next build`, Node 20.9+ je pinnan u `engines`).
+
+**Varijable okoline nisu obavezne za prvi deploy.** Bazni URL se rjesava sam
+(`src/lib/site.ts`):
+
+| Prioritet | Izvor | Kada |
+|---|---|---|
+| 1 | `NEXT_PUBLIC_SITE_URL` | rucni override |
+| 2 | `VERCEL_PROJECT_PRODUCTION_URL` | produkcija |
+| 3 | `VERCEL_URL` | pojedini preview |
+| 4 | `https://auto-ragusa.hr` | lokalno |
+
+Zato kanonske adrese, `sitemap.xml` i OG kartice na preview deployu pokazuju na
+preview, a ne na domenu koja jos ne postoji. **Preview se ne indeksira**:
+`robots.ts` vraca `disallow: /` kad `VERCEL_ENV` nije `production`.
+
+Kad domena `auto-ragusa.hr` bude spojena, ne treba mijenjati kod.
+
+Za slanje forme dodaj `RESEND_API_KEY` (vidi `.env.example`) i dovrsi
+`TODO(klijent)` u `src/app/api/termin/route.ts`.
+
 ## Što još treba klijent
 
 1. **Vektorski logo** (`.svg`/`.ai`/`.eps`). Sada koristimo njihov PNG od 600px
