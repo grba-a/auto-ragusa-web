@@ -1,26 +1,232 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Auto Ragusa - RADNI NALOG 001, tiha verzija
+
+   Stranica je jedan radni nalog za vozilo i ispunjava se dok ga citate.
+
+   Prva izvedba koncepta imala je 757 rijeci, 112 mono oznaka, 35 crtica, 33
+   brojke, trake i rotacije. Skeuomorfni dokument i minimalizam vuku na
+   suprotne strane, pa dokument sada ide kao svicarski tehnicki obrazac a ne
+   kao scrapbook.
+
+   Tri tvrda pravila:
+     1. JEDAN list. Papir i tinta, nista trece.
+     2. Crvena TOCNO tri puta: CTA, zig, zivo "otvoreno".
+     3. Nista ne ostaje ako se u jednoj recenici ne moze reci zasto je tu.
+
+   Nula tekstura papira kao slika.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-paper: #f6f3ec;
+  --color-ink: #14171a;
+
+  /* Sekundarni tekst. 6.0:1 na papiru. */
+  --color-ink-2: #585d63;
+  /* Samo na karbonu. */
+  --color-ink-dim: #9aa1a8;
+
+  --color-rule: #b9c4cf; /* crtkana linija za upis */
+  --color-edge: #cfc8ba; /* obrub polja, podjela redova */
+
+  /* Jedini akcent. Tri mjesta na cijeloj stranici. */
+  --color-signal: #c10f1b;
+  --color-signal-hot: #e0202d;
+
+  /* Geist Mono nosi sve strukturalno: nazive polja, brojeve i naslove. Mono
+     na velikom formatu se cita kao ispis i ta odluka nosi pola koncepta.
+     Instrument Sans nosi ono malo teksta koji je ostao. */
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-display: var(--font-geist-mono), ui-monospace, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --sheet: var(--color-paper);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+  border-radius: 0;
+}
+
+::selection {
+  background-color: var(--color-signal);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------- listovi --- */
+
+@utility sheet {
+  --sheet: var(--color-paper);
+  background-color: var(--sheet);
+}
+
+/* Karbon: kopija koja ostaje kod vas. Jedini tamni blok, i sjedi na potpisu. */
+@utility sheet-carbon {
+  --sheet: var(--color-ink);
+  background-color: var(--sheet);
+}
+
+/* ------------------------------------------------------------- tipografija --- */
+
+@utility doc-xl {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+@utility doc-lg {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+@utility doc-md {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* Naziv polja. Tise i rjede nego prije: cilj je ispod 40 na cijeloj stranici,
+   a bilo ih je 112. Oznaka smije postojati samo ako imenuje podatak. */
+@utility label {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-2);
+}
+
+/* Vrijednost u monu. Nije naziv polja, pa nema verzal ni siroki tracking. */
+@utility spec {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  color: var(--color-ink-2);
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* ------------------------------------------------------------------ polja --- */
+
+@utility field {
+  position: relative;
+  border: 1px solid var(--color-edge);
+}
+
+@utility field-label {
+  position: absolute;
+  top: 0;
+  left: 1.25rem;
+  transform: translateY(-50%);
+  padding-inline: 0.5rem;
+  background-color: var(--sheet);
+  white-space: nowrap;
+}
+
+/* Prazna linija za upis. Vrijednost se preko nje ispisuje na scroll. */
+@utility write-rule {
+  border-bottom: 1px dashed var(--color-rule);
+}
+
+/* --------------------------------------------------------------- karbon --- */
+
+/* Duplikat naslova u toniranoj crvenoj. Offset vozi BRZINA scrolla: skrolate
+   brzo i kopija se odvoji, stanete i uleti u registar. Nevidljiv u mirovanju,
+   pa ne kosta nista vizualno. */
+@utility carbon-ghost {
+  position: absolute;
+  inset: 0;
+  color: color-mix(in srgb, var(--color-signal) 24%, transparent);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  will-change: transform;
+}
+
+@utility reveal-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.09em;
+  margin-bottom: -0.09em;
+}
+
+@utility grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.025;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@utility hover-lift {
+  transition:
+    transform 200ms var(--ease-out-strong),
+    color 200ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ------------------------------------------------------- reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .grain,
+  .carbon-ghost {
+    display: none;
+  }
+  /* Upis vrijednosti degradira na obican tekst, ne na prazno polje. */
+  [data-write] {
+    clip-path: none !important;
+  }
 }
