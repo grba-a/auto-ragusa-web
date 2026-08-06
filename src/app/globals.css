@@ -270,6 +270,46 @@ html.lenis body {
   margin-bottom: -0.09em;
 }
 
+/* Vodilica u kazalu. Tiskani sadrzaj spaja naslov s brojem stranice tockama,
+   nikad praznim prostorom. */
+@utility leader {
+  border-bottom: 1px dotted var(--color-edge);
+  min-width: 1rem;
+}
+
+/* Datum se ne moze upisati `writeIn` animacijom jer se izracuna tek nakon
+   montiranja, kad je GSAP timeline vec sagraden. Ulazi kratkim fadeom. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Perforacija odreska. Rupice reza uz gornji rub otkidka: niz svijetlih tocaka
+   u boji stola, kao da je papir probusen i ceka da ga se otrgne. */
+@utility perforation {
+  background-image: radial-gradient(circle at center, var(--color-desk) 0 2px, transparent 2.5px);
+  background-size: 11px 6px;
+  background-repeat: repeat-x;
+  background-position: top center;
+}
+
+/* Suhi tisak preko karbon kopije. Bez boje: samo papir na 7% opacityja, pa se
+   cita kao utisnuto a ne kao jos jedan naslov. */
+@utility drypress {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+  opacity: 0.07;
+  white-space: nowrap;
+  user-select: none;
+}
+
 /* Broj stranice i inicijali. Otisnuto sitno, kao u pravom visestranicnom
    ugovoru gdje svaka stranica mora biti prepoznatljiva sama za sebe. */
 @utility page-mark {

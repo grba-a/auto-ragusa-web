@@ -31,6 +31,13 @@ type SheetProps = {
   carbon?: boolean
   /** "str." odnosno "p.", iz sadrzaja jer se prevodi. */
   pageLabel: string
+  /**
+   * Suhi tisak preko lista, npr. "PRIMJERAK ZA NARUCITELJA".
+   *
+   * Namjerno je prop a ne ugradeni dio karbon lista: uklanjanje je brisanje
+   * jednog atributa na pozivu, bez diranja ove komponente.
+   */
+  watermark?: string
   id?: string
   className?: string
 }
@@ -45,6 +52,7 @@ export default function Sheet({
   offset = 0,
   carbon = false,
   pageLabel,
+  watermark,
   id,
   className = '',
 }: SheetProps) {
@@ -73,7 +81,22 @@ export default function Sheet({
         </>
       )}
 
-      {children}
+      {/* Suhi tisak. `overflow-hidden` je na OVOM omotacu, nikad na listu:
+          spajalice na listovima 1 i 4 namjerno vire iznad fotografija i list ih
+          ne smije rezati. Rotacija samo od 768px, isto pravilo kao nagib. */}
+      {watermark && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 flex items-start justify-center overflow-hidden pt-[18%]"
+        >
+          <span className="drypress text-[clamp(1.6rem,6vw,4.5rem)] md:-rotate-[28deg]">
+            {watermark}
+          </span>
+        </span>
+      )}
+
+      {/* Sadrzaj iznad suhog tiska. */}
+      <div className="relative z-10">{children}</div>
 
       {/* Oznaka stranice. U pravom visestranicnom ugovoru svaka stranica mora
           biti prepoznatljiva sama za sebe, pa nosi i broj i inicijale. */}

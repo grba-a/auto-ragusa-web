@@ -6,6 +6,7 @@ import Attachments from './Attachments'
 import Signature from './Signature'
 import Contact from './Contact'
 import Footer from './Footer'
+import TearOff from './TearOff'
 import JsonLd from './JsonLd'
 import { autoRepairSchema } from '@/lib/schema'
 import type { SiteContent } from '@/content/types'
@@ -46,6 +47,10 @@ export default function Landing({ c }: { c: SiteContent }) {
       </main>
 
       <Footer c={c} />
+
+      {/* Odrezak. Samo mobilni: ispod 640px broj telefona nigdje drugdje nije
+          vidljiv, a vecina upita servisu su pozivi. */}
+      <TearOff c={c} />
     </>
   )
 }

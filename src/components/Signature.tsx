@@ -93,7 +93,16 @@ export default function Signature({ c }: { c: SiteContent }) {
   }
 
   return (
-    <Sheet id="nalog" page={5} of={6} tilt={0.25} offset={-0.5} carbon pageLabel={c.contract.pageLabel}>
+    <Sheet
+      id="nalog"
+      page={5}
+      of={6}
+      tilt={0.25}
+      offset={-0.5}
+      carbon
+      pageLabel={c.contract.pageLabel}
+      watermark={c.contract.copyMark}
+    >
       <div ref={root} className="px-5 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
         <header className="border-b border-white/20 pb-5">
           <p className="label mb-3 text-white/55">

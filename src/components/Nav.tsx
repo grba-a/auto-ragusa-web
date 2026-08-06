@@ -89,45 +89,94 @@ export default function Nav({ c }: { c: SiteContent }) {
         </div>
       </header>
 
-      {/* Mobilni meni. Skala pocinje od 0.98, ne od 0: nista u stvarnom svijetu
-          ne nastaje iz nicega. */}
+      {/* Mobilni meni je LIST PAPIRA koji ulijece s lijeva, a na njemu je
+          SADRZAJ UGOVORA.
+          Visestranicni ugovor ima kazalo: oznaka clanka, puni naslov, tockasta
+          vodilica i broj stranice. Prije je ovo bila jedina povrsina na cijeloj
+          stranici bez ijednog elementa jezika dokumenta - obicna tamna ploha s
+          cetiri gole rijeci koje se nisu podudarale ni s naslovima listova na
+          koje vode.
+
+          NE ide preko cijelog ekrana. Desni rub ostaje otvoren da se vidi stol
+          ispod: list koji pokriva svaki piksel prestaje biti list i postaje
+          zaslon. Zato ima i sjenu u dva sloja, istu kao ostali listovi.
+
+          Podloga je papir, ne karbon: kazalo je dio dokumenta, a karbon je
+          rezerviran za jedan list, onaj s potpisom. */}
+
+      {/* Stol iza lista. Klik po njemu zatvara, kao odlaganje papira. */}
+      <button
+        type="button"
+        aria-label={c.nav.close}
+        tabIndex={open ? 0 : -1}
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 z-[55] bg-desk/70 transition-opacity duration-300 lg:hidden ${
+          open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+      />
+
       <div
-        className={`sheet-carbon fixed inset-0 z-60 transition-[opacity,transform] duration-300 ease-[var(--ease-out-strong)] lg:hidden ${
-          open
-            ? 'pointer-events-auto scale-100 opacity-100'
-            : 'pointer-events-none scale-[0.98] opacity-0'
+        className={`sheet-paper fixed inset-y-0 left-0 z-60 w-[min(23rem,88vw)] transition-transform duration-[350ms] ease-[var(--ease-out-strong)] lg:hidden ${
+          open ? 'translate-x-0' : '-translate-x-full'
         }`}
         role="dialog"
         aria-modal={open}
         aria-hidden={!open}
+        inert={!open || undefined}
       >
+        {/* Rupice sada imaju pravu marginu u kojoj stoje: sadrzaj je odmaknut
+            `pl-11`, pa se citaju kao trag uveza a ne kao zaostale tocke. Preko
+            cijelog ekrana to nije bilo moguce. */}
+        <span className="punch top-[22%]" aria-hidden="true" />
+        <span className="punch top-[70%]" aria-hidden="true" />
+
         <div className="flex h-full flex-col">
-          <div className="flex h-16 items-center justify-between px-5 sm:px-8">
-            <Wordmark tone="light" height={30} />
+          <div className="flex h-16 items-center justify-between pr-4 pl-11">
+            <Wordmark height={28} />
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label={c.nav.close}
-              className="-mr-2 flex size-11 items-center justify-center text-white"
+              className="-mr-2 flex size-11 items-center justify-center text-ink"
             >
               <X size={21} weight="bold" aria-hidden="true" />
             </button>
           </div>
 
-          <nav className="flex flex-1 flex-col justify-center px-5 sm:px-8">
-            {c.nav.items.map((item) => (
+          {/* `overflow-y-auto`: na niskim ekranima sest redaka s dugim naslovima
+              (engleski "Acceptance and signature" se lomi u tri reda na 320px)
+              inace izlazi izvan kadra bez nacina da se dode do njih. */}
+          <nav className="flex flex-1 flex-col justify-center overflow-y-auto pr-5 pl-11">
+            <p className="label mb-5 border-b border-edge pb-3">{c.contract.indexLabel}</p>
+
+            {c.contract.index.map((row) => (
               <a
-                key={item.href}
-                href={item.href}
+                key={row.href}
+                href={row.href}
                 onClick={() => setOpen(false)}
-                className="border-b border-white/15 py-5"
+                className="grid grid-cols-[2.75rem_auto_1fr_auto] items-baseline gap-x-2 border-b border-edge py-3.5"
               >
-                <span className="doc-md text-2xl text-white">{item.label}</span>
+                {/* Prazno na listovima koji nisu clanak (naslovnica, prilozi).
+                    `nowrap`: bez toga se "Cl. 1." lomi u dva reda i udvostruci
+                    visinu retka. */}
+                <span className="spec tnum whitespace-nowrap text-ink">
+                  {row.article ? `Čl. ${row.article}` : ''}
+                </span>
+                {/* Uvijek 16px: panel je ogranicen na 23rem bez obzira na sirinu
+                    ekrana, pa bi `min-[420px]:text-lg` samo lomio naslove na
+                    vecim telefonima gdje panel nije nista siri. */}
+                <span className="doc-md text-base text-ink">{row.title}</span>
+                <span className="leader" aria-hidden="true">
+                  &#8203;
+                </span>
+                <span className="page-mark tnum">
+                  {c.contract.pageLabel} {row.page}
+                </span>
               </a>
             ))}
           </nav>
 
-          <div className="flex flex-col gap-3 px-5 pb-10 sm:px-8">
+          <div className="flex flex-col gap-3 pr-5 pb-8 pl-11">
             <ButtonLink
               href="#nalog"
               variant="signal"
@@ -138,7 +187,7 @@ export default function Nav({ c }: { c: SiteContent }) {
             </ButtonLink>
             <a
               href={site.tel.landline.href}
-              className="tnum flex items-center justify-center gap-2 py-3 text-sm text-white/70"
+              className="tnum flex items-center justify-center gap-2 py-3 text-sm text-ink-2"
             >
               <Phone size={13} weight="bold" aria-hidden="true" />
               {site.tel.landline.label}

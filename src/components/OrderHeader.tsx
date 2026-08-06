@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { ArrowRight } from '@phosphor-icons/react/dist/ssr'
 import { ButtonLink } from './ui/Button'
 import Clip from './ui/Clip'
+import HandDate from './ui/HandDate'
 import SplitLines from './ui/SplitLines'
 import Sheet from './Sheet'
 import OpenState from './OpenState'
@@ -55,7 +56,7 @@ export default function OrderHeader({ c }: { c: SiteContent }) {
   }, [])
 
   return (
-    <Sheet page={1} of={6} tilt={0.35} offset={-0.75} pageLabel={c.contract.pageLabel}>
+    <Sheet id="vrh" page={1} of={6} tilt={0.35} offset={-0.75} pageLabel={c.contract.pageLabel}>
       <div ref={root as React.RefObject<HTMLDivElement>} className="px-5 pt-16 pb-20 sm:px-10 sm:pt-20 lg:px-16 lg:pb-24">
         {/* Zaglavlje dokumenta */}
         <div data-strip className="flex flex-wrap items-start justify-between gap-6 border-b border-edge pb-6">
@@ -65,16 +66,19 @@ export default function OrderHeader({ c }: { c: SiteContent }) {
             <p className="doc-lg text-[clamp(1.15rem,2.4vw,1.9rem)] text-ink">
               {c.contract.title}
             </p>
+            {/* Broj ostaje PRAZAN, datum se ispunjava.
+                Prije je bilo obrnuto: `Br.` je nosio `RN-001`, a datum je bio
+                prazna crta. To je impliciralo da je ovo njihov prvi radni nalog
+                otkad postoje, a rade od 2019. Broj naloga ne smijemo izmisliti;
+                datum smijemo, jer je istinit po definiciji. */}
             <div className="mt-4 flex flex-wrap items-baseline gap-x-8 gap-y-2">
               <p className="flex items-baseline gap-2">
                 <span className="label">{c.contract.noLabel}</span>
-                <span className="hand" data-write>
-                  {c.order.no}
-                </span>
+                <span className="write-rule inline-block w-20" aria-hidden="true" />
               </p>
               <p className="flex items-baseline gap-2">
                 <span className="label">{c.contract.dateLabel}</span>
-                <span className="write-rule inline-block w-24" aria-hidden="true" />
+                <HandDate locale={c.locale} />
               </p>
             </div>
           </div>

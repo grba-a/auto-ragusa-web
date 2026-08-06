@@ -6,7 +6,7 @@ export const en: SiteContent = {
 
   nav: {
     items: [
-      { label: 'Steps', href: '#koraci' },
+      { label: 'Flow', href: '#koraci' },
       { label: 'Scope', href: '#opseg' },
       { label: 'Attachments', href: '#prilozi' },
       { label: 'Contact', href: '#kontakt' },
@@ -32,6 +32,16 @@ export const en: SiteContent = {
       { no: '3.', title: 'Acceptance and signature' },
     ],
     attachmentPrefix: 'Exhibit',
+    copyMark: "Client's copy",
+    indexLabel: 'Contents',
+    index: [
+      { href: '#vrh', title: 'The parties', page: 1 },
+      { href: '#koraci', title: 'How the work runs', page: 2, article: '1.' },
+      { href: '#opseg', title: 'Scope of work', page: 3, article: '2.' },
+      { href: '#prilozi', title: 'Exhibits', page: 4 },
+      { href: '#nalog', title: 'Acceptance and signature', page: 5, article: '3.' },
+      { href: '#kontakt', title: 'Contractor details', page: 6 },
+    ],
     signatureContractor: 'For the contractor',
     signatureClient: 'For the client',
   },
@@ -149,7 +159,9 @@ export const en: SiteContent = {
     submit: 'Send request',
     sending: 'Sending',
     successHeading: 'Received',
-    successBody: 'We will call you the same working day before 16:00.',
+    // "before 16:00" removed: Saturday closes at 13:00 and Sunday is closed, so
+    // the claim was untrue two days a week.
+    successBody: 'We will call you the same working day.',
     errorBody: 'Not sent. Call +385 20 418 509 or try again.',
     retry: 'Try again',
     errors: {

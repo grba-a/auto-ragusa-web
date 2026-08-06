@@ -40,6 +40,18 @@ export interface SiteContent {
     articles: { no: string; title: string }[]
     /** "Prilog" ispred slova A, B, C. */
     attachmentPrefix: string
+    /** Suhi tisak preko karbon lista: kopija koja ostaje naruicitelju. */
+    copyMark: string
+    /** "Sadrzaj" iznad kazala u mobilnom meniju. */
+    indexLabel: string
+    /**
+     * Kazalo ugovora. Mobilni meni nije popis linkova nego sadrzaj dokumenta,
+     * pa nosi pravi naslov lista, oznaku clanka i broj stranice.
+     *
+     * Zasebno od `nav.items`: traka na desktopu treba kratke rijeci, kazalo
+     * treba pune naslove. Isti `href`ovi, druga namjena.
+     */
+    index: { href: string; title: string; page: number; article?: string }[]
     signatureContractor: string
     signatureClient: string
   }

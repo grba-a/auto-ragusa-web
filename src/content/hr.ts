@@ -6,7 +6,7 @@ export const hr: SiteContent = {
 
   nav: {
     items: [
-      { label: 'Koraci', href: '#koraci' },
+      { label: 'Tijek', href: '#koraci' },
       { label: 'Opseg', href: '#opseg' },
       { label: 'Prilozi', href: '#prilozi' },
       { label: 'Kontakt', href: '#kontakt' },
@@ -32,6 +32,16 @@ export const hr: SiteContent = {
       { no: '3.', title: 'Prihvat i potpis' },
     ],
     attachmentPrefix: 'Prilog',
+    copyMark: 'Primjerak za naručitelja',
+    indexLabel: 'Sadržaj',
+    index: [
+      { href: '#vrh', title: 'Ugovorne strane', page: 1 },
+      { href: '#koraci', title: 'Tijek radova', page: 2, article: '1.' },
+      { href: '#opseg', title: 'Opseg radova', page: 3, article: '2.' },
+      { href: '#prilozi', title: 'Prilozi', page: 4 },
+      { href: '#nalog', title: 'Prihvat i potpis', page: 5, article: '3.' },
+      { href: '#kontakt', title: 'Podaci o izvođaču', page: 6 },
+    ],
     signatureContractor: 'Za izvođača',
     signatureClient: 'Za naručitelja',
   },
@@ -149,7 +159,9 @@ export const hr: SiteContent = {
     submit: 'Pošalji zahtjev',
     sending: 'Šaljem',
     successHeading: 'Zaprimljeno',
-    successBody: 'Javljamo se isti radni dan do 16:00.',
+    // "do 16:00" je maknuto: subotom se zatvara u 13:00, nedjeljom se ne radi,
+    // pa je tvrdnja bila neistinita dva dana u tjednu.
+    successBody: 'Javljamo se isti radni dan.',
     errorBody: 'Nije poslano. Nazovite 020 418 509 ili pokušajte ponovno.',
     retry: 'Pokušaj ponovno',
     errors: {
