@@ -195,10 +195,15 @@ zadani (`next build`, Node 20.9+ je pinnan u `engines`).
 | 4 | `https://auto-ragusa.hr` | lokalno |
 
 Zato kanonske adrese, `sitemap.xml` i OG kartice na preview deployu pokazuju na
-preview, a ne na domenu koja jos ne postoji. **Preview se ne indeksira**:
-`robots.ts` vraca `disallow: /` kad `VERCEL_ENV` nije `production`.
+preview, a ne na domenu koja još ne postoji.
 
-Kad domena `auto-ragusa.hr` bude spojena, ne treba mijenjati kod.
+**Indeksiranje se dopušta samo kad je produkcija na svojoj domeni.** `robots.ts`
+traži oba uvjeta: `VERCEL_ENV === 'production'` **i** domena koja nije
+`*.vercel.app`. Dok `auto-ragusa.hr` nije spojen, produkcijski URL jest
+vercel.app adresa, pa bi se bez druge provjere indeksirala ona, a kad bi domena
+poslije došla imali bismo dvije indeksirane kopije istog sadržaja.
+
+Kad domena bude spojena, ne treba mijenjati kod: `robots.txt` se sam otključa.
 
 Za slanje forme dodaj `RESEND_API_KEY` (vidi `.env.example`) i dovrsi
 `TODO(klijent)` u `src/app/api/termin/route.ts`.
