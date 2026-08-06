@@ -93,24 +93,84 @@ export function carbonLag(onScroll: (fn: (v: number) => void) => () => void) {
 }
 
 /**
- * Zig ODOBRENO. Padne s rotacijom i prebacajem, tinta se razlije, i ISTOVREMENO
- * se kvacice u redovima iznad zacrtaju. Od te tocke dalje polja u dokumentu su
- * ispunjena, prije nje su prazna.
- *
- * Kvacica je SVG path sa strokeDasharray = duzina puta, pa ne treba DrawSVG.
+ * Rucni potez u SVG-u: crta se sam, preko strokeDasharray = duzina puta.
+ * Nije potreban DrawSVG plugin.
  */
-export function stampIn(root: Element) {
-  const ticks = root.ownerDocument.querySelectorAll<SVGPathElement>('[data-tick]')
-  ticks.forEach((path) => {
+function strokeIn(paths: SVGPathElement[]) {
+  paths.forEach((path) => {
     const len = path.getTotalLength()
     gsap.set(path, { strokeDasharray: len, strokeDashoffset: len })
   })
+}
+
+/**
+ * Kucica se kvaci rukom kad njezin redak ude u kadar.
+ *
+ * Prije su se SVE kvacice na stranici crtale odjednom, kad padne zig, i to
+ * preko upita nad cijelim dokumentom. Znacilo je da su stavke ispod preloma
+ * bile odkvacene prije nego ih je itko procitao. Kvacica sada pripada svom
+ * retku, kao na papiru.
+ *
+ * Dva poteza X-a se crtaju jedan za drugim, ne istovremeno: ruka ne povlaci
+ * obje crte odjednom.
+ */
+export function tickBox(row: Element, delay = 0) {
+  const marks = [...row.querySelectorAll<SVGPathElement>('[data-mark]')]
+  if (!marks.length) return null
+
+  strokeIn(marks)
+
+  return gsap.to(marks, {
+    strokeDashoffset: 0,
+    duration: 0.22,
+    delay,
+    stagger: 0.1,
+    ease: 'power2.out',
+    scrollTrigger: { trigger: row, start: 'top 85%', once: true },
+  })
+}
+
+/**
+ * Potpis se ispisuje kao jedan potez pera.
+ *
+ * Sporije od kvacice i s `power1.inOut`, jer potpis nije oznaka nego gesta.
+ */
+export function drawSignature(root: Element) {
+  const paths = [...root.querySelectorAll<SVGPathElement>('[data-sign]')]
+  if (!paths.length) return null
+
+  strokeIn(paths)
+
+  return gsap.to(paths, {
+    strokeDashoffset: 0,
+    duration: 1.1,
+    stagger: 0.18,
+    ease: 'power1.inOut',
+    scrollTrigger: { trigger: root, start: 'top 80%', once: true },
+  })
+}
+
+/**
+ * Zig ODOBRENO. Padne s rotacijom i prebacajem, tinta se razlije.
+ *
+ * Okida na SEBI, ne na sekciji. Prije je okidao na vrhu sekcije s
+ * `start: 'top 72%'`, pa je zig padao prije nego sto je itko procitao ijednu
+ * stavku koju odobrava. Sada je zadnji potez na listu, kako i treba biti.
+ *
+ * Pocetno stanje postavlja `gsap.set` ovdje, a NE inline `style` u JSX-u.
+ * Inline `opacity: 0` je cekao GSAP koji se pod `prefers-reduced-motion:
+ * reduce` nikad ne pokrene, pa je zig - jedini figurativni trenutak cijelog
+ * koncepta - bio trajno nevidljiv tim korisnicima. Ovako element bez JS-a
+ * ostaje vidljiv, a `useLayoutEffect` ga sakrije prije prvog paint-a.
+ */
+export function stampIn(stamp: Element) {
+  gsap.set('[data-stamp]', { opacity: 0, transformOrigin: '52% 58%' })
+  gsap.set('[data-bleed]', { opacity: 0 })
 
   return gsap
     .timeline({
-      scrollTrigger: { trigger: root, start: 'top 72%', once: true },
+      scrollTrigger: { trigger: stamp, start: 'top 88%', once: true },
     })
-    .set('[data-stamp]', { transformOrigin: '52% 58%' })
     .fromTo(
       '[data-stamp]',
       { scale: 1.9, rotate: -13, opacity: 0 },
@@ -119,7 +179,6 @@ export function stampIn(root: Element) {
     .to('[data-stamp]', { scale: 0.985, duration: 0.09, ease: 'power2.inOut' })
     .to('[data-stamp]', { scale: 1, duration: 0.14 })
     .fromTo('[data-bleed]', { opacity: 0 }, { opacity: 0.32, duration: 0.5 }, 0.2)
-    .to(ticks, { strokeDashoffset: 0, stagger: 0.07, duration: 0.24, ease: 'power2.out' }, 0.15)
 }
 
 /**
@@ -139,7 +198,10 @@ export function writeIn(
     targets,
     { clipPath: 'inset(0 100% 0 0)' },
     {
-      clipPath: 'inset(0 0% 0 0)',
+      // Zavrsna vrijednost je -0.18em, ne 0%. Rukopisna pisma imaju privjes
+      // zadnjeg slova izvan okvira retka, a `inset(0 0% 0 0)` rezao bi tocno
+      // na rubu okvira i skratio rep zadnjeg slova. Na monu je bezopasno.
+      clipPath: 'inset(0 -0.18em 0 0)',
       duration: 0.5,
       delay,
       ease: 'none',

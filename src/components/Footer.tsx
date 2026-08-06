@@ -14,7 +14,9 @@ export default function Footer({ c }: { c: SiteContent }) {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="sheet-carbon py-14 text-white">
+    /* Podnozje nije list nego kolofon: lezi izravno na stolu, bez sjene i bez
+       broja stranice, ispod snopa. */
+    <footer className="py-16 text-white">
       <div className="mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-12">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-20">
           <div>

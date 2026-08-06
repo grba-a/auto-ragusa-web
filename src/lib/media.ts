@@ -23,6 +23,14 @@ export const media = {
   /** Ploca "Ovlasteni partner" sa sluzbenim znakovima. Sredisnji prilog. */
   plaketa,
 
-  /** Prilozi, u redu u kojem se pojavljuju. */
-  attachments: [fasada, boks, elektrika, vulkanizer],
+  /**
+   * Prilozi, u redu u kojem se pojavljuju: Prilog B, C, D.
+   *
+   * `fasada` je OVDJE izbacena. Ona je Prilog A na naslovnici, a bila je i prvi
+   * prilog u ovom bloku, pa se ista datoteka pojavljivala kao dva razlicito
+   * oznacena priloga istog ugovora, s dva razlicita potpisa. Drugog kadra
+   * fasade u setu nema, pa je ispravak izbacivanje a ne zamjena. Cetvrti prilog
+   * se vraca cim klijent isporuci fotografije po SHOT-LISTA.md.
+   */
+  attachments: [boks, elektrika, vulkanizer],
 } as const

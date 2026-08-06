@@ -1,25 +1,26 @@
 'use client'
 
 import { useLayoutEffect, useRef } from 'react'
-import DocTitle from './ui/DocTitle'
-import { gsap, MQ, revealIn, stampIn, writeIn } from '@/lib/gsap'
+import Checkbox from './ui/Checkbox'
+import Sheet from './Sheet'
+import { gsap, MQ, revealIn, stampIn, tickBox, writeIn } from '@/lib/gsap'
 import type { SiteContent } from '@/content/types'
 
 /**
- * Pet koraka kao tabela naloga.
+ * List 2 - Clanak 1., tijek radova.
  *
- * Izbaceno u odnosu na prvu izvedbu koncepta:
- *  - satne oznake 08:15 do 15:40. Obecavale su raspored po minuti koji servis
- *    ne moze drzati, a argument koji su podupirale stoji u leadu iznad.
- *  - zaglavlje tablice KORAK / CIJI / STO SE RADI / OK. Bilo je `aria-hidden`,
- *    sto je sam kod priznavao da ne nosi informaciju.
- *  - kvadratni okviri oko kvacica. Ostaje samo kvacica.
- *  - opisi ispod tri od pet koraka. Naslov ih je vec govorio.
+ * Pet tocaka numeriranih 1.1 do 1.5, kao stavke clanka. Svaka ima OTISNUTU
+ * praznu kucicu koja se ISPUNJAVA RUKOM kad njezin redak ude u kadar: obrazac
+ * je vec bio tiskan, a netko ga ispunjava dok ga citate.
  *
- * Dvije kolone umjesto cetiri, dvostruko zraka po redu.
+ * "Vas" stoji samo na vasa dva koraka, i to kao marginalija uz rub, rukom.
+ * Oznaciti i ostala tri s "Nas" ne dodaje nista.
+ *
+ * Zig ODOBRENO je zadnji potez na listu i okida na sebi, ne na sekciji.
  */
 export default function Steps({ c }: { c: SiteContent }) {
-  const root = useRef<HTMLElement>(null)
+  const root = useRef<HTMLDivElement>(null)
+  const article = c.contract.articles[0]
 
   useLayoutEffect(() => {
     const el = root.current
@@ -29,12 +30,17 @@ export default function Steps({ c }: { c: SiteContent }) {
     const build = (y: number) => () => {
       const ctx = gsap.context(() => {
         revealIn(el.querySelectorAll('[data-head]'), { trigger: el, stagger: 0.07, y })
+
         gsap.utils.toArray<HTMLElement>('[data-row]').forEach((row) => {
           revealIn(row, { trigger: row, y })
           const title = row.querySelector('[data-write]')
           if (title) writeIn(title, { trigger: row })
+          // Kvacica ide zamalo iza upisa, kao da ju je ista ruka povukla.
+          tickBox(row, 0.28)
         })
-        stampIn(el)
+
+        const stamp = el.querySelector('[data-stamp-zone]')
+        if (stamp) stampIn(stamp)
       }, el)
       return () => ctx.revert()
     }
@@ -45,91 +51,76 @@ export default function Steps({ c }: { c: SiteContent }) {
   }, [])
 
   return (
-    <section ref={root} id="koraci" className="sheet py-24 md:py-36">
-      <div className="mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-12">
-        <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] md:items-end md:gap-16">
-          <DocTitle
-            as="h2"
-            data-head
-            className="doc-lg max-w-[18ch] text-[clamp(1.7rem,4vw,3rem)] text-ink"
-          >
-            {c.steps.heading}
-          </DocTitle>
-          <p data-head className="text-base leading-relaxed text-ink-2">
-            {c.steps.lead}
+    <Sheet id="koraci" page={2} of={6} tilt={-0.5} offset={1.25} pageLabel={c.contract.pageLabel}>
+      <div ref={root} className="px-5 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+        <header data-head className="border-b border-edge pb-5">
+          <p className="label mb-3">
+            {c.contract.articleLabel} {article.no}
           </p>
-        </div>
+          <h2 className="doc-lg text-[clamp(1.5rem,3.4vw,2.6rem)] text-ink">{article.title}</h2>
+        </header>
 
-        <ol className="mt-20 border-t border-edge">
+        <p data-head className="margin-note mt-6 max-w-[46ch] sm:-rotate-[0.4deg]">
+          {c.steps.lead}
+        </p>
+
+        <ol className="mt-12 border-t border-edge">
           {c.steps.items.map((step, i) => (
             <li
               key={step.title}
               data-row
-              className="grid grid-cols-[2.5rem_1fr_1.75rem] items-baseline gap-x-5 border-b border-edge py-8 md:grid-cols-[4rem_5rem_1fr_2rem] md:gap-x-8 md:py-12"
+              className="grid grid-cols-[auto_1fr] items-start gap-x-4 border-b border-edge py-7 sm:grid-cols-[auto_3.5rem_1fr] sm:gap-x-6 sm:py-8"
             >
-              <span className="label tnum text-ink">{String(i + 1).padStart(2, '0')}</span>
+              <Checkbox className="mt-0.5" />
 
-              {/* Oznaka stoji samo na vasa dva koraka. Obiljeziti i ostala tri
-                  s "Nas" ne dodaje nista, a trostruko je oznaka na ekranu. */}
-              <span className="label text-signal">{step.yours ? c.steps.yours : ''}</span>
+              {/* Broj stavke unutar clanka: 1.1, 1.2 ... */}
+              <span className="spec tnum col-start-2 row-start-1 hidden pt-1 text-ink sm:block">
+                {article.no}
+                {i + 1}
+              </span>
 
-              {/* Naslov se upisuje kad red ude u viewport. */}
-              <div className="col-span-3 mt-3 md:col-span-1 md:mt-0">
-                <h3 className="doc-md text-xl text-ink sm:text-2xl">
+              <div className="col-start-2 row-start-1 sm:col-start-3">
+                <h3 className="doc-md flex flex-wrap items-baseline gap-x-4 text-lg text-ink sm:text-2xl">
                   <span data-write className="inline-block">
                     {step.title}
                   </span>
+                  {/* Dopisano uz samu stavku, ne na drugom kraju lista. Prije
+                      je stajalo u zasebnom stupcu na 1100px od naslova koji
+                      opisuje, pa se nije citalo kao biljeska uz njega. */}
+                  {step.yours && (
+                    <span className="margin-note -rotate-[3deg] whitespace-nowrap">
+                      {c.steps.yours}
+                    </span>
+                  )}
                 </h3>
                 {step.note && (
-                  <p className="mt-3 max-w-[52ch] text-sm leading-relaxed text-ink-2 sm:text-base">
+                  <p className="mt-2.5 max-w-[54ch] text-sm leading-relaxed text-ink-2 sm:text-base">
                     {step.note}
                   </p>
                 )}
               </div>
-
-              {/* Kvacica bez okvira. Zacrta se kad zig padne, ne prije. */}
-              <svg
-                viewBox="0 0 24 24"
-                className="col-start-3 row-start-1 size-5 justify-self-end md:col-start-4"
-                aria-hidden="true"
-              >
-                <path
-                  data-tick
-                  d="M3 13 L9 19 L21 5"
-                  fill="none"
-                  stroke="var(--color-signal)"
-                  strokeWidth="2.4"
-                  strokeLinecap="square"
-                />
-              </svg>
             </li>
           ))}
         </ol>
 
-        {/* Zig. Jedini figurativni trenutak na stranici, pa dobiva prostor.
-            Tvrdnja je o dokumentu, nikad brojka i nikad ocjena. */}
-        <div className="mt-28 flex justify-center pb-8 md:mt-36 md:pb-16">
+        {/* Zig. Ne centriran: peckat se ne udara po sredini crte. */}
+        <div data-stamp-zone className="mt-16 flex justify-center pb-2 sm:mt-20 sm:justify-end sm:pr-16">
           <div className="relative">
             <span
               data-bleed
               aria-hidden="true"
-              className="absolute -inset-3 bg-signal/25 blur-[6px]"
-              style={{ opacity: 0 }}
+              className="absolute -inset-3 bg-signal/25 opacity-[0.32] blur-[6px]"
             />
             <p
               data-stamp
               className="doc-lg relative border-[3px] border-signal px-6 py-3 text-signal"
-              style={{
-                opacity: 0,
-                fontSize: 'clamp(1.5rem,3.6vw,2.4rem)',
-                letterSpacing: '0.05em',
-              }}
+              style={{ fontSize: 'clamp(1.4rem,3.2vw,2.2rem)', letterSpacing: '0.05em' }}
             >
               {c.stamp.text}
             </p>
           </div>
         </div>
       </div>
-    </section>
+    </Sheet>
   )
 }

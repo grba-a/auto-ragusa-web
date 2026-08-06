@@ -1,45 +1,60 @@
 @import 'tailwindcss';
 
 /* ---------------------------------------------------------------------------
-   Auto Ragusa - RADNI NALOG 001, tiha verzija
+   Auto Ragusa - UGOVOR O SERVISU VOZILA
 
-   Stranica je jedan radni nalog za vozilo i ispunjava se dok ga citate.
+   Stranica je snop od sest listova ugovora polozenih na stol. Scroll je
+   listanje. Papir vise nije pozadina stranice nego objekt na njoj.
 
-   Prva izvedba koncepta imala je 757 rijeci, 112 mono oznaka, 35 crtica, 33
-   brojke, trake i rotacije. Skeuomorfni dokument i minimalizam vuku na
-   suprotne strane, pa dokument sada ide kao svicarski tehnicki obrazac a ne
-   kao scrapbook.
+   Nosiva ideja je jedan kontrast:
+     OTISNUTO  mono, crna, pravilno, poravnato
+     UPISANO   rukopis, plava kemijska, krivo, izvan crte
+   Obrazac je otisnut jednako za sve; upisano je za tebe. To je ono sto "ugovor
+   koji treba popuniti" znaci vizualno, i ne kosta ni jednu novu recenicu.
 
    Tri tvrda pravila:
-     1. JEDAN list. Papir i tinta, nista trece.
-     2. Crvena TOCNO tri puta: CTA, zig, zivo "otvoreno".
+     1. Dva sloja pisma, nikad treci. Otisnuto ili rukom.
+     2. Crvena je SAMO zig i primarni CTA. Zig je jedina crvena na pravom
+        ugovoru, pa je i ovdje.
      3. Nista ne ostaje ako se u jednoj recenici ne moze reci zasto je tu.
 
-   Nula tekstura papira kao slika.
+   NAPOMENA O OBRATU: prethodna verzija je ovdje tvrdila da dokument ide kao
+   svicarski tehnicki obrazac a ne kao scrapbook, i da nema teksture papira.
+   Ta odluka je svjesno obrnuta na zahtjev klijenta: papir je sada fizicki.
+   Ono sto iz nje ostaje na snazi je zabrana kica - stol je ravna tamna ploha,
+   pribor su samo spajalica i zig. Bez drveta, kave i gumica za papir.
 --------------------------------------------------------------------------- */
 
 @theme {
   --color-paper: #f6f3ec;
   --color-ink: #14171a;
 
+  /* Stol na kojem listovi leze. Topla tamna ploha, ne crna. */
+  --color-desk: #221e1a;
+  --color-desk-2: #2b2621;
+
   /* Sekundarni tekst. 6.0:1 na papiru. */
   --color-ink-2: #585d63;
   /* Samo na karbonu. */
   --color-ink-dim: #9aa1a8;
 
+  /* Plava kemijska. Sve sto je netko rukom upisao. 9.1:1 na papiru. */
+  --color-pen: #26347a;
+
   --color-rule: #b9c4cf; /* crtkana linija za upis */
   --color-edge: #cfc8ba; /* obrub polja, podjela redova */
 
-  /* Jedini akcent. Tri mjesta na cijeloj stranici. */
+  /* Jedini akcent. Zig i primarni CTA. */
   --color-signal: #c10f1b;
   --color-signal-hot: #e0202d;
 
-  /* Geist Mono nosi sve strukturalno: nazive polja, brojeve i naslove. Mono
-     na velikom formatu se cita kao ispis i ta odluka nosi pola koncepta.
-     Instrument Sans nosi ono malo teksta koji je ostao. */
+  /* Geist Mono nosi sve OTISNUTO: nazive polja, brojeve, clanke i naslove.
+     Instrument Sans nosi tekst u duzim blokovima.
+     Caveat nosi sve UPISANO RUKOM. */
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --font-sans: var(--font-instrument), system-ui, sans-serif;
   --font-display: var(--font-geist-mono), ui-monospace, monospace;
+  --font-hand: var(--font-caveat), 'Segoe Script', cursive;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
@@ -52,15 +67,21 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  background-color: var(--color-desk);
 }
 
 body {
-  background-color: var(--color-paper);
+  background-color: var(--color-desk);
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-synthesis-weight: none;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+
+  /* Nakoseni listovi vire par piksela u stranu. `clip` ne stvara scroll
+     kontejner pa `position: sticky` i ScrollTrigger ostaju netaknuti, sto
+     `hidden` ne bi. */
+  overflow-x: clip;
 }
 
 /* Lenis */
@@ -93,10 +114,68 @@ html.lenis body {
   background-color: var(--sheet);
 }
 
-/* Karbon: kopija koja ostaje kod vas. Jedini tamni blok, i sjedi na potpisu. */
+/* Karbon: kopija koja ostaje kod vas. Jedini tamni list, i sjedi na potpisu. */
 @utility sheet-carbon {
   --sheet: var(--color-ink);
   background-color: var(--sheet);
+}
+
+/* List ugovora kao fizicki objekt na stolu.
+   Sjena je u dva sloja: ostra linija dodira gdje papir lezi na plohi, i meka
+   siroka ispod nje. Jedan sloj izgleda kao CSS, dva kao papir. */
+@utility sheet-paper {
+  position: relative;
+  background-color: var(--color-paper);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.3),
+    0 22px 45px -20px rgb(0 0 0 / 0.55);
+}
+
+/* Zrno papira. Prije je bilo `fixed` preko cijelog ekrana, sto je znacilo da
+   je i stol imao zrno papira. Sada ide po listu. */
+@utility sheet-grain {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Rupice u lijevoj margini, kao da je list bio u registratoru. Dvije, ne cetiri:
+   cetiri ih pretvara u ukras, dvije ostaju trag upotrebe. */
+@utility punch {
+  position: absolute;
+  left: 1.15rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--color-desk) 55%, transparent);
+  box-shadow: inset 0 1px 1.5px rgb(0 0 0 / 0.35);
+}
+
+/* ----------------------------------------------------------- upisano rukom --- */
+
+/* Sve sto je netko rukom upisao. Nikad ispod 1.125rem: rukopis na sitnom
+   stupnju prestaje biti citljiv, a ovdje uvijek nosi podatak. */
+@utility hand {
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: 1.375rem;
+  line-height: 1.15;
+  color: var(--color-pen);
+  letter-spacing: 0.01em;
+}
+
+/* Marginalija: biljeska uz rub lista, malo nakosena, kao da je dopisana
+   poslije. Nagib ide samo na sirokim ekranima. */
+@utility margin-note {
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: 1.125rem;
+  line-height: 1.25;
+  color: var(--color-pen);
 }
 
 /* ------------------------------------------------------------- tipografija --- */
@@ -191,14 +270,14 @@ html.lenis body {
   margin-bottom: -0.09em;
 }
 
-@utility grain {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  opacity: 0.025;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+/* Broj stranice i inicijali. Otisnuto sitno, kao u pravom visestranicnom
+   ugovoru gdje svaka stranica mora biti prepoznatljiva sama za sebe. */
+@utility page-mark {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-ink-2) 70%, transparent);
 }
 
 @utility hover-lift {
@@ -221,12 +300,22 @@ html.lenis body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .grain,
   .carbon-ghost {
     display: none;
   }
   /* Upis vrijednosti degradira na obican tekst, ne na prazno polje. */
-  [data-write] {
+  [data-write],
+  [data-spec] {
     clip-path: none !important;
+  }
+  /* Nagib listova je dio mirovanja, ne animacija, ali korisnik koji trazi manje
+     gibanja obicno trazi i mirniju sliku, pa ga gasimo.
+
+     Mora ici na `rotate` i `translate`, NE na `transform`. Tailwind v4 pise
+     nagib u zasebna CSS svojstva, pa je `transform: none` ovdje bio pravilo
+     koje nista nije radilo, a izgledalo je kao da radi. */
+  [data-sheet] {
+    rotate: none !important;
+    translate: none !important;
   }
 }

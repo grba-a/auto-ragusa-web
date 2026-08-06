@@ -1,27 +1,25 @@
 'use client'
 
 import { useLayoutEffect, useRef } from 'react'
-import DocTitle from './ui/DocTitle'
+import Sheet from './Sheet'
 import { gsap, MQ, revealIn, writeIn } from '@/lib/gsap'
 import type { SiteContent } from '@/content/types'
 
 /**
- * Opseg radova: devet pozicija u jednom ledgeru.
+ * List 3 - Clanak 2., opseg radova.
  *
- * Blok "Dodatno na nalogu" je ugasen i njegove tri stavke su usle ovdje kao
- * pozicije 07 do 09. To su usluge, isti raspored, i nalog ima JEDAN popis
- * opsega, ne dva. Time nestaje i H2 i lead i tri field-labela koji su tri puta
- * ponavljali naslov svoje sekcije.
+ * Devet pozicija numeriranih 2.1 do 2.9, kao stavke clanka. Sest usluga i tri
+ * papira: ugovor ima JEDAN popis opsega, ne dva.
  *
- * Numeracija je obicna, 01 do 09. Prije je bila `05.1` do `05.6`, sto se nije
- * slagalo ni s vlastitim redoslijedom blokova: broj koji lazi je ornament koji
- * glumi podatak.
+ * Specifikacija je upisana RUKOM, jer to nije dio otisnutog obrasca nego ono
+ * sto je netko dopisao uz stavku. Pozicije bez specifikacije nemaju nista -
+ * linija koja vodi u prazno cita se kao podatak koji nedostaje.
  *
- * Opisne recenice su van. Gdje naziv nije dovoljan, stoji spec linija od
- * cetiri rijeci. Puni opisi zive u JSON-LD katalogu (`content.seo`).
+ * Puni opisi zive u JSON-LD katalogu (`content.seo`), ne na ekranu.
  */
 export default function Scope({ c }: { c: SiteContent }) {
-  const root = useRef<HTMLElement>(null)
+  const root = useRef<HTMLDivElement>(null)
+  const article = c.contract.articles[1]
 
   useLayoutEffect(() => {
     const el = root.current
@@ -35,6 +33,8 @@ export default function Scope({ c }: { c: SiteContent }) {
           revealIn(entry, { trigger: entry, y })
           const title = entry.querySelector('[data-write]')
           if (title) writeIn(title, { trigger: entry })
+          const spec = entry.querySelector('[data-spec]')
+          if (spec) writeIn(spec, { trigger: entry, delay: 0.22 })
         })
       }, el)
       return () => ctx.revert()
@@ -46,38 +46,44 @@ export default function Scope({ c }: { c: SiteContent }) {
   }, [])
 
   return (
-    <section ref={root} id="opseg" className="sheet py-24 md:py-32">
-      <div className="mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-12">
-        <DocTitle
-          as="h2"
-          data-head
-          className="doc-lg text-[clamp(1.7rem,4vw,3rem)] text-ink"
-        >
-          {c.scope.heading}
-        </DocTitle>
+    <Sheet id="opseg" page={3} of={6} tilt={0.45} offset={-1.5} pageLabel={c.contract.pageLabel}>
+      <div ref={root} className="px-5 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+        <header data-head className="border-b border-edge pb-5">
+          <p className="label mb-3">
+            {c.contract.articleLabel} {article.no}
+          </p>
+          <h2 className="doc-lg text-[clamp(1.5rem,3.4vw,2.6rem)] text-ink">{article.title}</h2>
+        </header>
 
-        <ol className="mt-24 border-t border-edge md:mt-32">
+        <ol className="mt-12 border-t border-edge">
           {c.scope.items.map((item, i) => (
             <li
               key={item.id}
               data-entry
-              className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-5 gap-y-2 border-b border-edge py-7 md:grid-cols-[4rem_minmax(0,30rem)_1fr] md:gap-x-8 md:py-9"
+              className="grid grid-cols-[3rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-edge py-5 sm:grid-cols-[4rem_minmax(0,26rem)_1fr] sm:gap-x-8 sm:py-6"
             >
-              <span className="label tnum text-ink">{String(i + 1).padStart(2, '0')}</span>
+              <span className="spec tnum text-ink">
+                {article.no}
+                {i + 1}
+              </span>
+
               <h3 className="doc-md text-lg text-ink sm:text-xl">
                 <span data-write className="inline-block">
                   {item.title}
                 </span>
               </h3>
-              {item.spec ? (
-                <p className="spec col-start-2 md:col-start-3">{item.spec}</p>
-              ) : (
-                <span aria-hidden="true" />
+
+              {item.spec && (
+                <p className="col-start-2 sm:col-start-3">
+                  <span data-spec className="margin-note inline-block">
+                    {item.spec}
+                  </span>
+                </p>
               )}
             </li>
           ))}
         </ol>
       </div>
-    </section>
+    </Sheet>
   )
 }

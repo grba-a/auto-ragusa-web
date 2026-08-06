@@ -16,6 +16,26 @@ export const hr: SiteContent = {
     close: 'Zatvori meni',
   },
 
+  contract: {
+    title: 'Ugovor o servisu vozila',
+    noLabel: 'Br.',
+    dateLabel: 'Datum',
+    partiesLabel: 'Ugovorne strane',
+    contractorLabel: 'Izvođač',
+    clientLabel: 'Naručitelj',
+    clientBlank: 'vaše ime',
+    pageLabel: 'str.',
+    articleLabel: 'Članak',
+    articles: [
+      { no: '1.', title: 'Tijek radova' },
+      { no: '2.', title: 'Opseg radova' },
+      { no: '3.', title: 'Prihvat i potpis' },
+    ],
+    attachmentPrefix: 'Prilog',
+    signatureContractor: 'Za izvođača',
+    signatureClient: 'Za naručitelja',
+  },
+
   order: {
     no: 'RN-001',
     kind: 'Radni nalog',
@@ -81,7 +101,6 @@ export const hr: SiteContent = {
     plaqueCaption: 'Ovlašteni partner',
     plaqueAlt: 'Ploča Ovlašteni partner sa službenim znakovima Peugeota i Citroëna u Auto Ragusi',
     items: [
-      { caption: 'Prijam vozila', alt: 'Ulaz u servis Auto Ragusa u Gružu' },
       { caption: 'Boks 1', alt: 'Radionica Auto Raguse s vozilom na dizalici' },
       { caption: 'Dijagnostika', alt: 'Računalna dijagnostika priključena na vozilo' },
       { caption: 'Vulkanizacija', alt: 'Montaža gume u vulkanizerskoj radionici' },

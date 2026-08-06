@@ -3,6 +3,7 @@
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr'
 import DocTitle from './ui/DocTitle'
 import Reveal from './ui/Reveal'
+import Sheet from './Sheet'
 import { site } from '@/lib/site'
 import type { SiteContent } from '@/content/types'
 
@@ -26,13 +27,16 @@ export default function Contact({ c }: { c: SiteContent }) {
   const today = new Date().getDay()
 
   return (
-    <section id="kontakt" className="sheet border-t border-edge py-24 md:py-32">
-      <div className="mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-12">
-        <DocTitle as="h2" className="doc-lg text-[clamp(1.7rem,4vw,3rem)] text-ink">
-          {c.contact.heading}
-        </DocTitle>
+    <Sheet id="kontakt" page={6} of={6} tilt={-0.4} offset={1} pageLabel={c.contract.pageLabel}>
+      <div className="px-5 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+        <header className="border-b border-edge pb-5">
+          <p className="label mb-3">{c.contract.contractorLabel}</p>
+          <DocTitle as="h2" className="doc-lg text-[clamp(1.5rem,3.4vw,2.6rem)] text-ink">
+            {c.contact.heading}
+          </DocTitle>
+        </header>
 
-        <Reveal className="mt-20 grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)_minmax(0,24rem)] lg:gap-16">
+        <Reveal className="mt-14 grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)_minmax(0,24rem)] lg:gap-16">
           {/* Podaci */}
           <dl data-reveal className="grid gap-8">
             <div>
@@ -155,6 +159,6 @@ export default function Contact({ c }: { c: SiteContent }) {
           </figure>
         </Reveal>
       </div>
-    </section>
+    </Sheet>
   )
 }

@@ -3,7 +3,6 @@ import OrderHeader from './OrderHeader'
 import Steps from './Steps'
 import Scope from './Scope'
 import Attachments from './Attachments'
-import Story from './Story'
 import Signature from './Signature'
 import Contact from './Contact'
 import Footer from './Footer'
@@ -12,23 +11,23 @@ import { autoRepairSchema } from '@/lib/schema'
 import type { SiteContent } from '@/content/types'
 
 /**
- * Jedan dokument, sedam blokova.
+ * Ugovor o servisu vozila: sest listova na stolu.
  *
- *   01 zaglavlje   mreza polja koja se ispunjavaju + prilog
- *   02 koraci      tabela s kvacicama i zigom
- *   03 opseg       ledger, devet pozicija
- *   04 prilozi     ploca i cetiri fotografije, ravno
- *   05 Ragusa      marginalije uz jedan odlomak
- *   06 potpis      prazan nalog na karbonu
- *   07 kontakt     podaci, radno vrijeme, shematska karta
+ *   1/6 naslovnica  naslov, broj, ugovorne strane, predmet, Prilog A
+ *   2/6 clanak 1.   tijek radova, kucice se kvace rukom, zig
+ *   3/6 clanak 2.   opseg radova, devet pozicija
+ *   4/6 prilozi     fotografije na spajalicama, Napomena uz rub
+ *   5/6 clanak 3.   prihvat i potpis (karbon kopija, tamni list)
+ *   6/6 izvodac     adresa, radno vrijeme, karta
  *
- * Ugaseno u odnosu na prvu izvedbu koncepta: ticker (nula novih cinjenica),
- * blok "Dodatno" (usao u ledger), blok klauzula (svaka je vec bila u traci
- * polja u zaglavlju), zaseban blok radnog vremena (usao u kontakt).
+ * Podnozje NIJE list: lezi izravno na stolu, kao kolofon ispod snopa.
  *
- * Vertikalni ritam je namjerno nejednak: koraci i prilozi dobivaju `py-36`,
- * ostali `py-32` ili manje. Jednak razmak na svim sekcijama je bio jedini
- * razlog zasto se stranica citala kao niz jednakih kutija.
+ * `Story` je prestao biti vlastita sekcija. Prica o Ragusi nije clanak ugovora
+ * nego biljeska, pa stoji kao "Napomena" uz rub lista 4.
+ *
+ * Razmak izmedu listova je namjerno nejednak. Snop papira na stolu nije
+ * poravnat, a nagib i pomak svakog lista nose `Sheet` propovi `tilt` i
+ * `offset`.
  */
 export default function Landing({ c }: { c: SiteContent }) {
   return (
@@ -36,12 +35,12 @@ export default function Landing({ c }: { c: SiteContent }) {
       <JsonLd data={autoRepairSchema(c)} />
       <Nav c={c} />
 
-      <main>
+      {/* `pt` mora nadici fiksnu traku od 64px, inace prvi list klizi pod nju. */}
+      <main className="flex flex-col gap-14 px-3 pt-24 pb-10 sm:gap-20 sm:px-6 sm:pb-16 lg:gap-24 lg:px-10">
         <OrderHeader c={c} />
         <Steps c={c} />
         <Scope c={c} />
         <Attachments c={c} />
-        <Story c={c} />
         <Signature c={c} />
         <Contact c={c} />
       </main>

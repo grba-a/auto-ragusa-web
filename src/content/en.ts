@@ -16,6 +16,26 @@ export const en: SiteContent = {
     close: 'Close menu',
   },
 
+  contract: {
+    title: 'Vehicle service agreement',
+    noLabel: 'No.',
+    dateLabel: 'Date',
+    partiesLabel: 'The parties',
+    contractorLabel: 'Contractor',
+    clientLabel: 'Client',
+    clientBlank: 'your name',
+    pageLabel: 'p.',
+    articleLabel: 'Clause',
+    articles: [
+      { no: '1.', title: 'How the work runs' },
+      { no: '2.', title: 'Scope of work' },
+      { no: '3.', title: 'Acceptance and signature' },
+    ],
+    attachmentPrefix: 'Exhibit',
+    signatureContractor: 'For the contractor',
+    signatureClient: 'For the client',
+  },
+
   order: {
     no: 'WO-001',
     kind: 'Work order',
@@ -81,7 +101,6 @@ export const en: SiteContent = {
     plaqueAlt:
       'An authorised partner plaque with the official Peugeot and Citroën marks at Auto Ragusa',
     items: [
-      { caption: 'Vehicle intake', alt: 'Entrance to the Auto Ragusa workshop in Gruž' },
       { caption: 'Bay 1', alt: 'The Auto Ragusa workshop with a car on the lift' },
       { caption: 'Diagnostics', alt: 'Computer diagnostics connected to a vehicle' },
       { caption: 'Tyre fitting', alt: 'A tyre being fitted in the workshop' },

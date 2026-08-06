@@ -16,6 +16,34 @@ export interface SiteContent {
     close: string
   }
 
+  /**
+   * Okvir ugovora. Struktura, ne proza: naslovi clanaka, oznake stranica i
+   * nazivi ugovornih strana. Rijeci unutar clanaka se ne mijenjaju - hladan
+   * pravni okvir i topao ljudski tekst unutar njega su namjerni kontrast.
+   */
+  contract: {
+    /** "Ugovor o servisu vozila" */
+    title: string
+    /** Oznaka broja, koja ostaje prazna: "Br." */
+    noLabel: string
+    dateLabel: string
+    /** "Ugovorne strane" */
+    partiesLabel: string
+    contractorLabel: string
+    clientLabel: string
+    /** Crta koju popunjava posjetitelj. */
+    clientBlank: string
+    /** "str." ispred broja stranice. */
+    pageLabel: string
+    articleLabel: string
+    /** Naslovi clanaka, redom kojim se pojavljuju. */
+    articles: { no: string; title: string }[]
+    /** "Prilog" ispred slova A, B, C. */
+    attachmentPrefix: string
+    signatureContractor: string
+    signatureClient: string
+  }
+
   order: {
     no: string
     kind: string

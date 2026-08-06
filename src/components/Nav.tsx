@@ -9,11 +9,13 @@ import { site } from '@/lib/site'
 import type { SiteContent } from '@/content/types'
 
 /**
- * Traka dokumenta. Bez blur trika i bez sjene: samo linija koja se pojavi kad
- * se odlijepimo od vrha, kao rub lista.
+ * Traka dokumenta: uska papirnata traka koja lezi na vrhu snopa, kao naljepnica
+ * na hrptu registratora.
  *
- * Zivo stanje "otvoreno sada" stoji ovdje na desktopu, jer se servis bira po
- * tome je li otvoren, a ne po linku.
+ * UVIJEK je papir, i to nije ukras nego nuznost. Prije je u mirovanju bila
+ * prozirna s tamnim tekstom, sto je radilo dok je cijela stranica bila papir.
+ * Otkad listovi leze na tamnom stolu, prozirna traka znaci tamni tekst na
+ * tamnoj plohi. Sjena se pojavi tek kad se odlijepimo od vrha.
  */
 export default function Nav({ c }: { c: SiteContent }) {
   const [stuck, setStuck] = useState(false)
@@ -46,8 +48,8 @@ export default function Nav({ c }: { c: SiteContent }) {
       <div id="nav-sentinel" aria-hidden="true" className="absolute top-0 h-2 w-full" />
 
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-          stuck ? 'sheet border-b border-edge' : 'border-b border-transparent'
+        className={`sheet fixed inset-x-0 top-0 z-50 border-b border-edge transition-shadow duration-300 ${
+          stuck ? 'shadow-[0_10px_24px_-14px_rgb(0_0_0/0.55)]' : ''
         }`}
       >
         <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">

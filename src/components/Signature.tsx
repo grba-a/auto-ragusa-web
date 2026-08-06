@@ -1,9 +1,11 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { ArrowRight, CheckCircle, WarningCircle } from '@phosphor-icons/react/dist/ssr'
 import { Button } from './ui/Button'
 import { Field, Input, Select, Textarea } from './ui/Field'
+import Sheet from './Sheet'
+import { drawSignature, gsap, MQ } from '@/lib/gsap'
 import { site } from '@/lib/site'
 import type { SiteContent } from '@/content/types'
 
@@ -23,9 +25,24 @@ type Status = 'idle' | 'sending' | 'sent' | 'error'
  */
 export default function Signature({ c }: { c: SiteContent }) {
   const form = useRef<HTMLFormElement>(null)
+  const root = useRef<HTMLDivElement>(null)
   const [errors, setErrors] = useState<Errors>({})
   const [status, setStatus] = useState<Status>('idle')
   const [expanded, setExpanded] = useState(false)
+  const article = c.contract.articles[2]
+
+  useLayoutEffect(() => {
+    const el = root.current
+    if (!el) return
+    const mm = gsap.matchMedia()
+    const build = () => {
+      const ctx = gsap.context(() => drawSignature(el), el)
+      return () => ctx.revert()
+    }
+    mm.add(MQ.desktop, build)
+    mm.add(MQ.mobile, build)
+    return () => mm.revert()
+  }, [status])
 
   function validateField(name: string, value: string): string | undefined {
     if (name === 'name') return value.trim().length < 2 ? c.booking.errors.name : undefined
@@ -76,9 +93,14 @@ export default function Signature({ c }: { c: SiteContent }) {
   }
 
   return (
-    <section id="nalog" className="sheet-carbon py-20 text-white md:py-28">
-      <div className="mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-12">
-        <p className="label border-b border-white/20 pb-3 text-white/55">{c.booking.kind}</p>
+    <Sheet id="nalog" page={5} of={6} tilt={0.25} offset={-0.5} carbon pageLabel={c.contract.pageLabel}>
+      <div ref={root} className="px-5 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+        <header className="border-b border-white/20 pb-5">
+          <p className="label mb-3 text-white/55">
+            {c.contract.articleLabel} {article.no}
+          </p>
+          <p className="doc-lg text-[clamp(1.5rem,3.4vw,2.6rem)] text-white">{article.title}</p>
+        </header>
 
         {status === 'sent' ? (
           <div className="py-16 text-center sm:py-24">
@@ -234,10 +256,44 @@ export default function Signature({ c }: { c: SiteContent }) {
                 </p>
               )}
 
-              {/* Potpisna crta iznad tipke. */}
-              <div className="mt-2">
-                <div className="h-10 border-b border-white/30" aria-hidden="true" />
-                <p className="label mt-2 text-white/55">{c.booking.signatureLine}</p>
+              {/* Dvije potpisne crte, kao na svakom ugovoru: izvodac je vec
+                  potpisao, naruciteljeva je prazna. Nesimetricne su namjerno -
+                  jedna nosi potpis, druga ceka. */}
+              <div className="mt-4 grid gap-8 sm:grid-cols-2 sm:gap-12">
+                <div>
+                  <svg
+                    viewBox="0 0 200 56"
+                    className="h-14 w-full max-w-[13rem]"
+                    role="img"
+                    aria-label={site.name}
+                  >
+                    <path
+                      data-sign
+                      d="M8 44 C 20 12, 30 10, 34 26 C 38 42, 30 48, 26 40 C 22 32, 40 18, 56 30 C 66 38, 62 46, 56 44 C 50 42, 58 26, 78 24 C 92 23, 96 34, 104 34 C 116 34, 118 16, 132 18 C 142 19, 140 34, 152 32 C 164 30, 168 20, 178 22"
+                      fill="none"
+                      stroke="#8fa6f2"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      data-sign
+                      d="M96 48 C 120 44, 152 42, 186 44"
+                      fill="none"
+                      stroke="#8fa6f2"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="border-b border-white/30" aria-hidden="true" />
+                  <p className="label mt-2 text-white/55">{c.contract.signatureContractor}</p>
+                </div>
+
+                <div>
+                  <div className="h-14" aria-hidden="true" />
+                  <div className="border-b border-white/30" aria-hidden="true" />
+                  <p className="label mt-2 text-white/55">{c.contract.signatureClient}</p>
+                </div>
               </div>
 
               <Button
@@ -264,6 +320,6 @@ export default function Signature({ c }: { c: SiteContent }) {
           </div>
         )}
       </div>
-    </section>
+    </Sheet>
   )
 }
